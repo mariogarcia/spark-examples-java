@@ -10,6 +10,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
+import github.mariogarcia.spark.common.Collections;
 import github.mariogarcia.spark.common.ResourceUtils;
 
 /**
@@ -17,7 +18,11 @@ import github.mariogarcia.spark.common.ResourceUtils;
  *
  * @since 0.1.0
  */
-public class SparkWordCount {
+public final class SparkWordCount {
+
+    private SparkWordCount() {
+        // NOTHING
+    }
 
     /**
      * Main entry point
@@ -34,7 +39,7 @@ public class SparkWordCount {
 
         JavaRDD<String> input = context.textFile(fileURI);
         JavaPairRDD<String, Integer> pairs = input.flatMapToPair(SparkWordCount::flatPairs);
-        JavaPairRDD<String, Integer> wordCountRDD = pairs.reduceByKey((v1, v2) -> v1 + v2);
+        JavaPairRDD<String, Integer> wordCountRDD = pairs.reduceByKey(Collections::sum);
 
         wordCountRDD.saveAsTextFile("/tmp/lala.txt");
     }
@@ -59,7 +64,7 @@ public class SparkWordCount {
      * @return an {@link Iterator} of (word, 1)
      * @since 0.1.0
      */
-    static Iterator<Tuple2<String, Integer>> flatPairs(String line) {
+    public static Iterator<Tuple2<String, Integer>> flatPairs(String line) {
         return Arrays
             .asList(line.split("\\|"))
             .stream()
