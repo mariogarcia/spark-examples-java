@@ -11,4 +11,10 @@ public final class ResourceUtils {
             .getResource(classpath)
             .toURI();
     }
+
+    public static String getResourceURI(String resourcePath) throws URISyntaxException {
+        return ResourceUtils
+            .loadClasspathResource(resourcePath)
+            .toString();
+    }
 }

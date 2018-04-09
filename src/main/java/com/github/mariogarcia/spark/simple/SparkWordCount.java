@@ -1,17 +1,17 @@
 package github.mariogarcia.spark.simple;
 
+import static github.mariogarcia.spark.common.Configuration.getConf;
+import static github.mariogarcia.spark.common.ResourceUtils.getResourceURI;
+
 import scala.Tuple2;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.net.URI;
 import java.net.URISyntaxException;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-
 import github.mariogarcia.spark.common.Collections;
-import github.mariogarcia.spark.common.ResourceUtils;
 
 /**
  * Example showing how to count words from a csv file
@@ -21,7 +21,7 @@ import github.mariogarcia.spark.common.ResourceUtils;
 public final class SparkWordCount {
 
     private SparkWordCount() {
-        // NOTHING
+        // Prevents JaCoCo to check class instantiation
     }
 
     /**
@@ -31,29 +31,13 @@ public final class SparkWordCount {
      * @since 0.1.0
      */
     public static void main(String args[]) throws URISyntaxException {
-        SparkConf sparkConfiguration = getConf();
-        JavaSparkContext context = new JavaSparkContext(sparkConfiguration);
-        String fileURI = ResourceUtils
-            .loadClasspathResource("/books.csv")
-            .toString();
+        String fileURI = getResourceURI("/books.csv");
 
-        JavaRDD<String> input = context.textFile(fileURI);
-        JavaPairRDD<String, Integer> pairs = input.flatMapToPair(SparkWordCount::flatPairs);
-        JavaPairRDD<String, Integer> wordCountRDD = pairs.reduceByKey(Collections::sum);
-
-        wordCountRDD.saveAsTextFile("/tmp/lala.txt");
-    }
-
-    /**
-     * Sets the initial Spark configuration
-     *
-     * @return an instance of {@link SparkConf}
-     * @since 0.1.0
-     */
-    static SparkConf getConf() {
-        return new SparkConf()
-            .setMaster("local")
-            .setAppName("WordCount");
+        new JavaSparkContext(getConf("WordCount"))
+            .textFile(fileURI)
+            .flatMapToPair(SparkWordCount::flatPairs)
+            .reduceByKey(Collections::sum)
+            .saveAsTextFile("/tmp/spark/WordCount");
     }
 
     /**

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertThat;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static github.mariogarcia.spark.common.Configuration.getConf;
 
 import scala.Tuple2;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class SparkWordCountTests {
 
     @Test
     public void testGetConf() {
-        SparkConf conf = SparkWordCount.getConf();
+        SparkConf conf = getConf("WordCount");
 
         assertThat(conf.get("spark.master"), equalTo("local"));
         assertThat(conf.get("spark.app.name"), equalTo("WordCount"));
