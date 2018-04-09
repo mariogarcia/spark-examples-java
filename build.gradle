@@ -9,11 +9,26 @@ dependencies {
 
     implementation 'com.google.guava:guava:23.0'
     implementation 'org.apache.spark:spark-core_2.11:2.0.0'
+    implementation 'org.apache.spark:spark-sql_2.11:2.0.0'
+
+    implementation 'neo4j-contrib:neo4j-spark-connector:2.1.0-M4'
+
+
     testImplementation 'junit:junit:4.12'
 }
 
 repositories {
     jcenter()
+    mavenCentral()
+    repositories {
+        maven {
+            url  "https://dl.bintray.com/spark-packages/maven"
+        }
+    }
 }
 
 mainClassName = 'github.mariogarcia.spark.simple.SparkWordCount'
+
+jacoco {
+    toolVersion = "0.8.1"
+}
